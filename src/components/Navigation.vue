@@ -3,11 +3,10 @@ import { useRouter} from 'vue-router'
 
 const router = useRouter();
 
+const toogle = (pageName) => {
+    router.push({name: pageName})
+}
 
-    const toogle = (pageName) => {
-        router.push({name: pageName})
-        console.log("1")
-    }
 </script>
 
 <template>
@@ -29,7 +28,7 @@ const router = useRouter();
         Главная
       </v-btn>
 
-      <v-btn>
+      <v-btn @click="router.push({ name: 'List' })">
         <v-icon>mdi-book-heart</v-icon>
 
         <span>Справочник</span>

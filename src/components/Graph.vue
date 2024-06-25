@@ -5,6 +5,11 @@ import Navigation from '/src/components/Navigation.vue'
 </script>
 
 <template>
-    <v-card>fkkfkafsk</v-card>
+    <v-card>
+        <v-card-title>Статистика</v-card-title>
+        
+
+
+    </v-card>
     <Navigation/>
 </template>
