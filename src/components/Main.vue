@@ -70,7 +70,7 @@ const breakfastList = {
                         </v-list-item>
                     </template>
                 </v-list-group>
-                <v-list-group value="Diner" >
+                <v-list-group value="Dinner" >
                     <template v-slot:activator="{ props }">
                         <v-list-item
                             v-bind="props"

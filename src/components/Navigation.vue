@@ -31,7 +31,7 @@ const toogle = (pageName) => {
       <v-btn @click="router.push({ name: 'List' })">
         <v-icon>mdi-book-heart</v-icon>
 
-        <span>Справочник</span>
+        Справочник
       </v-btn>
     </v-bottom-navigation>
   </v-layout>
