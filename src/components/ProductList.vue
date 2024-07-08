@@ -20,6 +20,7 @@ const foodcarbs = ref('');
 const foodproteins = ref('');
 const foodfats = ref('');
 
+
 const addFood = () => {
     if (foodname.value.length > 0) {
         const newFood = {
@@ -58,6 +59,8 @@ const addFood = () => {
 
             auto-select-first
             ></v-autocomplete>
+            <v-container>
+            </v-container>
         </v-container>
         <v-list v-if="model">
             <v-list-item >

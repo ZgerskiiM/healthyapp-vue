@@ -22,7 +22,7 @@ const toogle = (pageName) => {
         Статистика
       </v-btn >
 
-      <v-btn  @click="router.push({ name: 'Main' })">
+      <v-btn @click="router.push({ name: 'Main' })">
         <v-icon>mdi-home-heart</v-icon>
 
         Главная
