@@ -1,31 +1,22 @@
-import { defineStore } from 'pinia';
+import { defineStore } from "pinia";
 
-export const useUserStore = defineStore('user', {
-    state: () => ({
-        user: [],
-        }
-    ),
-    actions: {
-        addUser(user) {
-            this.user.push(user);
+export const useUserStore = defineStore("user", {
+  state: () => ({
+    currentUser: JSON.parse(localStorage.getItem('currentUser')) || null,
+  }),
+  actions: {
+    setUser(user) {
+      this.currentUser = user;
+      localStorage.setItem('currentUser', JSON.stringify(user));
     },
-    getPerson(id) {
-        return this.people.find(people => people.id === id);
+    updateCalories(calories) {
+      if (this.currentUser) {
+        this.currentUser.ucalories = calories;
+        localStorage.setItem('currentUser', JSON.stringify(this.currentUser));
+      }
     },
-    PersonName (name) {
-        return this.people.find(people => people.name === name)
-    },
-    getPerson(id) {
-        return this.people.find(people => people.id === id);
-    },
-    PersonName (firstname) {
-        return this.people.find(people => people.firstname === firstname)
-    },
-    getPerson(id) {
-        return this.people.find(people => people.id === id);
-    },
-    PersonName (firstname) {
-        return this.people.find(people => people.firstname === firstname)
-    }
-}
+  },
+  getters: {
+    getUser: (state) => state.currentUser,
+  },
 });
