@@ -98,16 +98,16 @@ const addFood = () => {
               <template v-slot:default="{ isActive }">
                 <v-card id="add-card">
                   <h2>Введите название</h2>
-                  <v-card-actions>
+                  <v-card-actions class="d-flex flex-column">
                     <v-text-field v-model="foodname" label="Введите название"></v-text-field>
                     <v-text-field v-model="foodcalories" label="Количество каллорий на 100г" type="Number"></v-text-field>
                     <v-text-field v-model="foodproteins" label="Количество белка" type="Number"></v-text-field>
                     <v-text-field v-model="foodfats" label="Количество жиров" type="Number"></v-text-field>
                     <v-text-field v-model="foodcarbs" label="Количество углеводов" type="Number"></v-text-field>
                   </v-card-actions>
-                  <v-btn class="mt-3" @click="addFood">Добавить</v-btn>
                   <v-card-actions>
-                    <v-btn text="Close" @click="isActive.value = false"></v-btn>
+                    <v-btn text="Закрыть" @click="isActive.value = false"></v-btn>
+                    <v-btn text = "Добавить" @click="addFood"></v-btn>
                   </v-card-actions>
                 </v-card>
               </template>
@@ -121,21 +121,34 @@ const addFood = () => {
 </template>
 
 <style scoped lang="scss">
-* {
-  color: rgb(236, 236, 236);
+*{
+  color:white;
 }
 
 #add-card {
-  background-color: rgb(227, 139, 77);
-  height: 30em;
+  background-color: rgb(248, 248, 248);
+  height: 40em;
   display: flex;
   flex-direction: column;
-  width: 50em;
+  width: 40em;
   justify-content: center;
+  color:black;
+  .v-text-field {
+    color:black;
+    width: 30em;
+    font-size:1em;
+  }
+  .v-btn {
+    width:10em
+  }
+}
+
+h2 {
+  color:black;
 }
 
 .v-card {
-  background-color: rgb(137, 209, 124);
+  background-color: rgb(41, 178, 147);
   height: 50em;
   border-radius: 0;
   padding-left: 50px;
@@ -155,5 +168,9 @@ p {
 .product-name {
   font-size: 20px;
   font-weight: 200;
+}
+
+.v-btn {
+  color: black;
 }
 </style>
