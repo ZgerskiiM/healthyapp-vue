@@ -94,7 +94,6 @@ const addFood = () => {
               <template v-slot:activator="{ props: activatorProps }">
                 <v-btn v-bind="activatorProps" text="Добавить свой продукт" block></v-btn>
               </template>
-
               <template v-slot:default="{ isActive }">
                 <v-card id="add-card">
                   <h2>Введите название</h2>
@@ -145,6 +144,11 @@ const addFood = () => {
 
 h2 {
   color:black;
+}
+
+h1 {
+  font-weight: 200;
+  font-size: 40px;
 }
 
 .v-card {

@@ -38,18 +38,21 @@ const options = {
 
 <template>
   <h1>Статистика</h1>
-  <v-container >
+  <v-container>
     <v-list>
       <p>{{ UserStore.getUser.uname }}</p>
-      <p>Возраст  {{ UserStore.getUser.age }}</p>
-      <p>Рост  {{ UserStore.getUser.height }}</p>
-      <p>Вес  {{ UserStore.getUser.weight }}</p>
-      <v-btn @click="UserStore.getUser.uname='tytyty'">Редактировать</v-btn>
-      <v-btn @click="UserStore.getUser.weight='50'">Редактировать</v-btn>
-
+      <p>Возраст {{ UserStore.getUser.age }}</p>
+      <p>Рост {{ UserStore.getUser.height }}</p>
+      <p>Вес {{ UserStore.getUser.weight }}</p>
+      <v-btn @click="UserStore.getUser.uname = 'tytyty'">Редактировать</v-btn>
+      <v-btn @click="UserStore.getUser.weight = '50'">Редактировать</v-btn>
     </v-list>
+    <v-container class="d-flex flex-row align-space-around">
+      <v-text-field type="Date"></v-text-field>
+      <v-text-field type="Date"></v-text-field>
+    </v-container>
   </v-container>
-  <Navigation/>
+  <Navigation />
 </template>
 
 <style scoped lang="scss">
@@ -67,7 +70,7 @@ const options = {
 .v-list {
   background-color: transparent;
   list-style: none;
-  font-size:20px;
+  font-size: 20px;
   display: flex;
   flex-direction: column;
 }
@@ -75,6 +78,11 @@ const options = {
 p {
   font-size: 32px;
   font-weight: 600;
+}
+
+h1 {
+  font-weight: 200;
+  font-size: 40px;
 }
 
 .product-name {
@@ -93,4 +101,9 @@ p {
 * {
   color: white;
 }
+
+.v-text-field {
+  width: 5em;
+}
+
 </style>
