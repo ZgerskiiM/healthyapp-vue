@@ -1,5 +1,10 @@
 <script setup>
-import { ref, reactive, onMounted, computed } from "vue";
+import {
+  ref,
+  reactive,
+  onMounted,
+  computed
+} from "vue";
 import Navigation from "/src/components/Navigation.vue";
 import UserData from "/src/components/UserData.vue"
 import { useFoodStore } from '/src/stores/ProductStore.js'
@@ -14,13 +19,6 @@ const FoodStore = useFoodStore();
 const items = ref([]);
 const UserStore = useUserStore();
 const dailyNutrition = useCaloriesStore();
-
-const updateDailyCalories = (newCalories) => {
-  UserStore.updateCalories(newCalories);
-};
-
-console.log (UserStore.currentUser)
-
 
 onMounted(() => {
   checkFirstVisit();
@@ -65,13 +63,10 @@ const initializeMealsForDate = (date) => {
   }
 };
 
-
 const dailyCalorieGoal = computed(() => {
   const user = UserStore.getUser;
   return user ? user.ucalories : 2500;
 });
-
-
 
 const newProduct = reactive({
   name: "",
@@ -101,8 +96,6 @@ const totalCalories = computed(() => {
   return dailyNutrition.getDailyCalories(meals, selectedDate.value, items.value);
 })
 
-
-
 const totalProteins = computed(() => {
   const dateString = selectedDate.value.toISOString().split("T")[0];
   if (!meals[dateString]) return 0;
@@ -119,7 +112,6 @@ const totalProteins = computed(() => {
 const totalCarbs = computed(() => {
   const dateString = selectedDate.value.toISOString().split("T")[0];
   if (!meals[dateString]) return 0;
-
   return ['Breakfast', 'Lunch', 'Dinner'].reduce((total, meal) => {
     return total + meals[dateString][meal].reduce((mealTotal, product) => {
       const item = items.value.find(i => i.name === product.name);
@@ -133,7 +125,6 @@ const totalCarbs = computed(() => {
 const totalFats = computed(() => {
   const dateString = selectedDate.value.toISOString().split("T")[0];
   if (!meals[dateString]) return 0;
-
   return ['Breakfast', 'Lunch', 'Dinner'].reduce((total, meal) => {
     return total + meals[dateString][meal].reduce((mealTotal, product) => {
       const item = items.value.find(i => i.name === product.name);
@@ -165,11 +156,11 @@ const loadMealsFromLocalStorage = () => {
     Object.assign(meals, JSON.parse(savedMeals));
   }
 };
-
 </script>
+
 <template>
   <UserData v-if="isFirstVisit" @close="closeFirstVisitComponent"/>
-  <div v-else>
+  <div v-else class="main-window">
   <v-container class="progress_card">
     <v-card-title>
       <h1>Счет калорий</h1>
@@ -197,14 +188,19 @@ const loadMealsFromLocalStorage = () => {
     <v-btn @click="showCalendar = !showCalendar">{{ formatDate(selectedDate) }}</v-btn>
   </v-container>
   <v-row v-if="showCalendar" justify="space-around">
-    <v-date-picker v-model="selectedDate"
+    <v-date-picker
+    v-model="selectedDate"
     show-adjacent-months
     hide-header
     ></v-date-picker>
   </v-row>
   <v-card-item class="d-flex justify-center">
     <v-expansion-panels>
-      <v-expansion-panel v-for="meal in ['Breakfast', 'Lunch', 'Dinner']" :key="meal" class="mt-2" rounded="shaped">
+      <v-expansion-panel
+        v-for="meal in ['Breakfast', 'Lunch', 'Dinner']" :key="meal"
+        class="mt-2"
+        rounded="shaped"
+      >
         <v-expansion-panel-title>
           <v-icon>mdi-food-variant</v-icon>
           {{ mealTranslations[meal] }}
@@ -249,17 +245,28 @@ const loadMealsFromLocalStorage = () => {
       <v-card-title> {{ currentMeal }} </v-card-title>
       <v-card-text>
         <v-container id="id">
-          <v-autocomplete v-model="newProduct.name" :items="items.map(item => item.name)" :title="calories"
-            item-text="item.name" item-value="item.name" label="Какой продукт вы хотите найти?" auto-select-first
-            width="110%">
+          <v-autocomplete
+            v-model="newProduct.name"
+            :items="items.map(item => item.name)"
+            :title="calories"
+            item-text="item.name"
+            item-value="item.name"
+            label="Какой продукт вы хотите найти?"
+            auto-select-first
+            width="110%"
+          >
           </v-autocomplete>
         </v-container>
-        <v-text-field v-model="newProduct.weight" label="Вес (г)" type="number"></v-text-field>
+        <v-text-field
+          v-model="newProduct.weight"
+          label="Вес (г)"
+          type="number"
+        ></v-text-field>
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="blue darken-1" text @click="showAddProductDialog = false">Отмена</v-btn>
-        <v-btn color="blue darken-1" text @click="confirmAddProduct">Добавить</v-btn>
+        <v-btn color="blue darken-1" @click="showAddProductDialog = false">Отмена</v-btn>
+        <v-btn color="blue darken-1" @click="confirmAddProduct">Добавить</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -309,13 +316,15 @@ h1 {
 
 .v-expansion-panels{
   width: 50em;
+
 }
+
 
 .v-date-picker {
   max-height: 300px;
 }
 
-div {
+.main-window {
   height: 100%;
 }
 

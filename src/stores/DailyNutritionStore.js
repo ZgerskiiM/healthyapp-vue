@@ -22,7 +22,6 @@ export const useCaloriesStore = defineStore('calories', {
       return (meals, selectedDate, items) => {
         const dateString = selectedDate.toISOString().split("T")[0];
         if (!meals[dateString]) return 0;
-
         return ['Breakfast', 'Lunch', 'Dinner'].reduce((total, meal) => {
           return total + meals[dateString][meal].reduce((mealTotal, product) => {
             const item = items.find(i => i.name === product.name);

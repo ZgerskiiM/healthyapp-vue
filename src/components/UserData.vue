@@ -2,12 +2,11 @@
 import { ref } from "vue";
 import { v4 as uuidv4 } from "uuid";
 import { useUserStore } from "/src/stores/UserStore.js";
-import { defineEmits } from 'vue';
 
-const emit = defineEmits(['close']);
+const emit = defineEmits(["close"]);
 
 const close = () => {
-  emit('close');
+  emit("close");
 };
 
 const UserStore = useUserStore();
@@ -71,7 +70,7 @@ const calculateCalories = (user) => {
     bmr = 10 * user.weight + 6.25 * user.height - 5 * user.age - 161;
   }
 
-  const ncalories = Math.round(bmr * activityMultiplier[user.activity])
+  const ncalories = Math.round(bmr * activityMultiplier[user.activity]);
   return ncalories;
 };
 </script>
@@ -128,8 +127,12 @@ const calculateCalories = (user) => {
       <v-text-field v-model="userage" type="number"></v-text-field>
       <v-card-action>
         <v-btn
-          @click="showweight = true; showage = false;"
-        >Продолжить</v-btn>
+          @click="
+            showweight = true;
+            showage = false;
+          "
+          >Продолжить</v-btn
+        >
       </v-card-action>
     </v-card-item>
     <v-card-item v-if="showweight">
@@ -137,8 +140,12 @@ const calculateCalories = (user) => {
       <v-card-action>
         <v-text-field v-model="userweight" type="number"></v-text-field>
         <v-btn
-          @click="showheight = true; showweight = false;"
-          >Продолжить</v-btn>
+          @click="
+            showheight = true;
+            showweight = false;
+          "
+          >Продолжить</v-btn
+        >
       </v-card-action>
     </v-card-item>
     <v-card-item v-if="showheight">
@@ -166,10 +173,7 @@ const calculateCalories = (user) => {
         </v-radio-group>
       </v-card-action>
       <v-btn @click="addUser">Закончить</v-btn>
-      <v-btn
-        @click="close"
-        >Перейти к приложению</v-btn
-      >
+      <v-btn @click="close">Перейти к приложению</v-btn>
     </v-card-item>
     <v-card-item v-for="user in UserStore.user" :key="user.id"> {{ user.uname }}, ваша суточная норма калорий равна {{ calculateCalories(user) }} </v-card-item>
   </v-card>
@@ -177,11 +181,11 @@ const calculateCalories = (user) => {
 
 <style scoped lang="scss">
 * {
-  color: rgb(236, 236, 236);
+  color: rgb(14, 14, 14);
 }
 
 .v-card {
-  background-color: rgb(137, 209, 124);
+  background-color: rgb(41, 178, 93);
   height: 58.9em;
   border-radius: 0;
 }
@@ -213,7 +217,4 @@ p {
   display: flex;
   justify-content: center;
 }
-
-
-
 </style>

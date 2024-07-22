@@ -9,18 +9,6 @@ export const useUserStore = defineStore("user", {
       this.currentUser = user;
       localStorage.setItem('currentUser', JSON.stringify(user));
     },
-    updateCalories(calories) {
-      if (this.currentUser) {
-        this.currentUser.ucalories = calories;
-        localStorage.setItem('currentUser', JSON.stringify(this.currentUser));
-      }
-    },
-    updateUser(updatedUser) {
-      if (this.currentUser) {
-        this.currentUser = { ...this.currentUser, ...updatedUser };
-        localStorage.setItem('currentUser', JSON.stringify(this.currentUser));
-      }
-    },
   },
   getters: {
     getUser: (state) => state.currentUser,

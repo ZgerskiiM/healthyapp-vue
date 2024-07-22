@@ -53,7 +53,8 @@ const addFood = () => {
         item-text="item.name"
         item-value="item.name"
         label="Какой продукт вы хотите найти?"
-        auto-select-first></v-autocomplete>
+        auto-select-first
+        ></v-autocomplete>
       </v-container>
       <v-list v-if="model">
         <v-list-item>
@@ -92,21 +93,43 @@ const addFood = () => {
           <v-col cols="12" md="6">
             <v-dialog transition="dialog-bottom-transition" width="auto">
               <template v-slot:activator="{ props: activatorProps }">
-                <v-btn v-bind="activatorProps" text="Добавить свой продукт" block></v-btn>
+                <v-btn
+                v-bind="activatorProps"
+                text="Добавить свой продукт"
+                block></v-btn>
               </template>
               <template v-slot:default="{ isActive }">
                 <v-card id="add-card">
                   <h2>Введите название</h2>
                   <v-card-actions class="d-flex flex-column">
-                    <v-text-field v-model="foodname" label="Введите название"></v-text-field>
-                    <v-text-field v-model="foodcalories" label="Количество каллорий на 100г" type="Number"></v-text-field>
-                    <v-text-field v-model="foodproteins" label="Количество белка" type="Number"></v-text-field>
-                    <v-text-field v-model="foodfats" label="Количество жиров" type="Number"></v-text-field>
-                    <v-text-field v-model="foodcarbs" label="Количество углеводов" type="Number"></v-text-field>
+                    <v-text-field
+                    v-model="foodname"
+                    label="Введите название"
+                    ></v-text-field>
+                    <v-text-field
+                    v-model="foodcalories"
+                    label="Количество каллорий на 100г"
+                    type="Number"
+                    ></v-text-field>
+                    <v-text-field
+                    v-model="foodproteins"
+                    label="Количество белка"
+                    type="Number"
+                    ></v-text-field>
+                    <v-text-field
+                    v-model="foodfats"
+                    label="Количество жиров"
+                    type="Number"
+                    ></v-text-field>
+                    <v-text-field
+                    v-model="foodcarbs"
+                    label="Количество углеводов"
+                    type="Number"
+                    ></v-text-field>
                   </v-card-actions>
                   <v-card-actions>
                     <v-btn text="Закрыть" @click="isActive.value = false"></v-btn>
-                    <v-btn text = "Добавить" @click="addFood"></v-btn>
+                    <v-btn text="Добавить" @click="addFood"></v-btn>
                   </v-card-actions>
                 </v-card>
               </template>
@@ -120,8 +143,8 @@ const addFood = () => {
 </template>
 
 <style scoped lang="scss">
-*{
-  color:white;
+* {
+  color: white;
 }
 
 #add-card {
@@ -131,19 +154,19 @@ const addFood = () => {
   flex-direction: column;
   width: 40em;
   justify-content: center;
-  color:black;
+  color: black;
   .v-text-field {
-    color:black;
+    color: black;
     width: 30em;
-    font-size:1em;
+    font-size: 1em;
   }
   .v-btn {
-    width:10em
+    width: 10em;
   }
 }
 
 h2 {
-  color:black;
+  color: black;
 }
 
 h1 {
