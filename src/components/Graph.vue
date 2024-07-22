@@ -1,109 +1,194 @@
 <script setup>
-import { ref } from "vue";
-import Navigation from "/src/components/Navigation.vue";
-import { useUserStore } from "/src/stores/UserStore.js";
-import {
-  Chart as ChartJS,
-  Title,
-  Tooltip,
-  Legend,
-  BarElement,
-  CategoryScale,
-  LinearScale
-} from 'chart.js'
-import { Bar } from 'vue-chartjs'
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
+import { ref, onMounted, computed, watch } from 'vue';
+import { Bar } from 'vue-chartjs';
+import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from 'chart.js';
+import { useFoodStore } from '/src/stores/ProductStore.js';
+import { useUserStore } from '/src/stores/UserStore.js';
+import { useCaloriesStore } from '/src/stores/DailyNutritionStore.js';
 
+ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale);
+
+const FoodStore = useFoodStore();
 const UserStore = useUserStore();
+const dailyNutrition = useCaloriesStore();
 
-const name1 = ref(UserStore.getUser.uname);
-
-const data = {
+const startDate = ref(new Date().toISOString().split('T')[0]);
+const endDate = ref(new Date().toISOString().split('T')[0]);
+const chartData = ref({
   labels: [],
-  datasets: [
-    {
-      label: 'Data One',
-      backgroundColor: '#f87979',
-      data: [40, 20, 12, 39, 10, 40, 39, 80, 40, 20, 12, 11]
-    }
-  ]
-}
+  datasets: [{
+    data: [],
+    backgroundColor: []
+  }]
+});
 
-const options = {
+const dailyCalorieGoal = computed(() => {
+  const user = UserStore.getUser;
+  return user ? user.ucalories : 2500;
+});
+
+const chartOptions = {
   responsive: true,
-  maintainAspectRatio: false
+  maintainAspectRatio: false,
+  scales: {
+    y: {
+      beginAtZero: true
+    }
+  }
+};
+
+function updateChart() {
+  const dates = [];
+  const calories = [];
+  const colors = [];
+
+  const start = new Date(startDate.value);
+  const end = new Date(endDate.value);
+  let currentDate = new Date(start);
+
+  while (currentDate <= end) {
+    const dateString = currentDate.toISOString().split('T')[0];
+    dates.push(dateString);
+    const caloriesForDay = calculateCaloriesForDate(dateString);
+    calories.push(caloriesForDay);
+    colors.push(caloriesForDay >= dailyCalorieGoal.value ? '#ea5545' : '#87bc45');
+
+    currentDate.setDate(currentDate.getDate() + 1);
+  }
+
+  chartData.value = {
+    labels: dates,
+    datasets: [{
+      data: calories,
+      backgroundColor: colors
+    }]
+  };
 }
 
+function calculateCaloriesForDate(dateString) {
+  const meals = JSON.parse(localStorage.getItem('meals')) || {};
+  if (!meals[dateString]) return 0;
+  return dailyNutrition.getDailyCalories(meals, new Date(dateString), FoodStore.food);
+}
+
+onMounted(() => {
+  updateChart();
+});
+
+watch([startDate, endDate], updateChart);
+
+// User data editing logic
+const isEditModalOpen = ref(false);
+const editedUser = ref({ ...UserStore.getUser });
+
+function openEditModal() {
+  editedUser.value = { ...UserStore.getUser };
+  isEditModalOpen.value = true;
+}
+
+function closeEditModal() {
+  isEditModalOpen.value = false;
+}
+
+function saveUserData() {
+  UserStore.updateUser(editedUser.value);
+  isEditModalOpen.value = false;
+}
 </script>
 
 <template>
-  <h1>Статистика</h1>
   <v-container>
+    <h1>Статистика</h1>
     <v-list>
       <p>{{ UserStore.getUser.uname }}</p>
       <p>Возраст {{ UserStore.getUser.age }}</p>
       <p>Рост {{ UserStore.getUser.height }}</p>
       <p>Вес {{ UserStore.getUser.weight }}</p>
-      <v-btn @click="UserStore.getUser.uname = 'tytyty'">Редактировать</v-btn>
-      <v-btn @click="UserStore.getUser.weight = '50'">Редактировать</v-btn>
+      <v-btn @click="openEditModal">Редактировать</v-btn>
     </v-list>
-    <v-container class="d-flex flex-row align-space-around">
-      <v-text-field type="Date"></v-text-field>
-      <v-text-field type="Date"></v-text-field>
-    </v-container>
+    <v-card
+      min-width="300px"
+      max-width="1050px"
+      class="mx-auto text-center mt-5 pl-2 pr-2"
+      elevation="4"
+      style="background-color:rgb(228,228,228);"
+    >
+      <div class="date-picker-container">
+        <v-text-field
+          v-model="startDate"
+          label="Начальная дата"
+          type="date"
+          @change="updateChart"
+        ></v-text-field>
+        <v-text-field
+          v-model="endDate"
+          label="Конечная дата"
+          type="date"
+          @change="updateChart"
+        ></v-text-field>
+      </div>
+      <div class="chart-container">
+        <Bar :data="chartData" :options="chartOptions" />
+      </div>
+    </v-card>
+
+    <v-dialog v-model="isEditModalOpen" max-width="500px">
+      <v-card>
+        <v-card-title>
+          <span class="headline">Редактировать данные</span>
+        </v-card-title>
+        <v-card-text>
+          <v-form>
+            <v-text-field
+              v-model="editedUser.uname"
+              label="Имя"
+            ></v-text-field>
+            <v-text-field
+              v-model="editedUser.age"
+              label="Возраст"
+              type="number"
+            ></v-text-field>
+            <v-text-field
+              v-model="editedUser.height"
+              label="Рост"
+              type="number"
+            ></v-text-field>
+            <v-text-field
+              v-model="editedUser.weight"
+              label="Вес"
+              type="number"
+            ></v-text-field>
+          </v-form>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="blue darken-1" text @click="closeEditModal">Отмена</v-btn>
+          <v-btn color="blue darken-1" text @click="saveUserData">Сохранить</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
-  <Navigation />
 </template>
 
-<style scoped lang="scss">
-.v-container {
-  display: flex;
-  flex-direction: column;
-}
 
+<style scoped>
 .v-card {
-  background-color: rgb(137, 209, 124);
-  height: 50em;
-  border-radius: 0;
-}
-
-.v-list {
-  background-color: transparent;
-  list-style: none;
-  font-size: 20px;
   display: flex;
   flex-direction: column;
 }
 
-p {
-  font-size: 32px;
-  font-weight: 600;
-}
-
-h1 {
-  font-weight: 200;
-  font-size: 40px;
-}
-
-.product-name {
-  font-size: 20px;
-  font-weight: 200;
-}
-
-.v-icon {
-  color: rgb(93, 93, 93);
-}
-
-.v-btn {
-  width: 20em;
-}
-
-* {
-  color: white;
+.date-picker-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
 }
 
 .v-text-field {
-  width: 5em;
+  max-width: 200px;
 }
 
+.chart-container {
+  height: 400px;
+  position: relative;
+}
 </style>

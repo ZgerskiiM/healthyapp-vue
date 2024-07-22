@@ -2,6 +2,13 @@
 import { ref } from "vue";
 import { v4 as uuidv4 } from "uuid";
 import { useUserStore } from "/src/stores/UserStore.js";
+import { defineEmits } from 'vue';
+
+const emit = defineEmits(['close']);
+
+const close = () => {
+  emit('close');
+};
 
 const UserStore = useUserStore();
 const userweight = ref(0);
@@ -17,10 +24,6 @@ const showweight = ref(false);
 const showheight = ref(false);
 const showactivity = ref(false);
 const start = ref(true);
-const visited = ref(false);
-
-const increment = (ref) => ref.value++;
-const decrement = (ref) => ref.value--;
 
 const addUser = () => {
   const newUser = {
@@ -42,7 +45,6 @@ const addUser = () => {
   UserStore.setUser(newUser);
   resetForm();
 };
-
 
 const resetForm = () => {
   userweight.value = 0;
@@ -163,13 +165,10 @@ const calculateCalories = (user) => {
           <v-radio label="Экстремальный" value="ExtrAct"></v-radio>
         </v-radio-group>
       </v-card-action>
-      <v-btn @click="addUser" >Закончить</v-btn>
+      <v-btn @click="addUser">Закончить</v-btn>
       <v-btn
-        @click="
-          showname = true;
-          showactivity = false;
-        "
-        >Начать заново</v-btn
+        @click="close"
+        >Перейти к приложению</v-btn
       >
     </v-card-item>
     <v-card-item v-for="user in UserStore.user" :key="user.id"> {{ user.uname }}, ваша суточная норма калорий равна {{ calculateCalories(user) }} </v-card-item>
@@ -183,7 +182,7 @@ const calculateCalories = (user) => {
 
 .v-card {
   background-color: rgb(137, 209, 124);
-  height: 50em;
+  height: 58.9em;
   border-radius: 0;
 }
 
@@ -208,11 +207,13 @@ p {
 
 .v-btn {
   width: 10em;
-
 }
 
 .v-card-item {
   display: flex;
   justify-content: center;
 }
+
+
+
 </style>

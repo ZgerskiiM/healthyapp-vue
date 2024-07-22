@@ -1,8 +1,10 @@
 <script setup>
 import { ref, reactive, onMounted, computed } from "vue";
 import Navigation from "/src/components/Navigation.vue";
+import UserData from "/src/components/UserData.vue"
 import { useFoodStore } from '/src/stores/ProductStore.js'
 import { useUserStore } from '/src/stores/UserStore.js'
+import { useCaloriesStore } from '/src/stores/DailyNutritionStore.js';
 
 const showCalendar = ref(false);
 const selectedDate = ref(new Date());
@@ -11,6 +13,7 @@ const currentMeal = ref("");
 const FoodStore = useFoodStore();
 const items = ref([]);
 const UserStore = useUserStore();
+const dailyNutrition = useCaloriesStore();
 
 const updateDailyCalories = (newCalories) => {
   UserStore.updateCalories(newCalories);
@@ -18,16 +21,37 @@ const updateDailyCalories = (newCalories) => {
 
 console.log (UserStore.currentUser)
 
+
 onMounted(() => {
+  checkFirstVisit();
   items.value = FoodStore.food;
   loadMealsFromLocalStorage();
 });
+
+const isFirstVisit = ref(false);
+
+const checkFirstVisit = () => {
+  if (!localStorage.getItem('hasVisited')) {
+    isFirstVisit.value = true;
+    localStorage.setItem('hasVisited', 'true');
+  }
+};
+
+const closeFirstVisitComponent = () => {
+  isFirstVisit.value = false;
+};
 
 const meals = reactive({
   Breakfast: [],
   Lunch: [],
   Dinner: [],
 });
+
+const mealTranslations = {
+  'Breakfast': 'Завтрак',
+  'Lunch': 'Обед',
+  'Dinner': 'Ужин'
+};
 
 const initializeMealsForDate = (date) => {
   const dateString = date.toISOString().split("T")[0];
@@ -46,6 +70,7 @@ const dailyCalorieGoal = computed(() => {
   const user = UserStore.getUser;
   return user ? user.ucalories : 2500;
 });
+
 
 
 const newProduct = reactive({
@@ -73,19 +98,10 @@ const confirmAddProduct = () => {
 };
 
 const totalCalories = computed(() => {
-  const dateString = selectedDate.value.toISOString().split("T")[0];
-  if (!meals[dateString]) return 0;
+  return dailyNutrition.getDailyCalories(meals, selectedDate.value, items.value);
+})
 
-  return ['Breakfast', 'Lunch', 'Dinner'].reduce((total, meal) => {
-    return total + meals[dateString][meal].reduce((mealTotal, product) => {
-      const item = items.value.find(i => i.name === product.name);
-      if (item) {
-        return mealTotal + parseInt((parseInt(item.calories) / 100) * parseInt(product.weight));
-      }
-      return mealTotal;
-    }, 0);
-  }, 0);
-});
+
 
 const totalProteins = computed(() => {
   const dateString = selectedDate.value.toISOString().split("T")[0];
@@ -150,10 +166,10 @@ const loadMealsFromLocalStorage = () => {
   }
 };
 
-
 </script>
-
 <template>
+  <UserData v-if="isFirstVisit" @close="closeFirstVisitComponent"/>
+  <div v-else>
   <v-container class="progress_card">
     <v-card-title>
       <h1>Счет калорий</h1>
@@ -191,7 +207,7 @@ const loadMealsFromLocalStorage = () => {
       <v-expansion-panel v-for="meal in ['Breakfast', 'Lunch', 'Dinner']" :key="meal" class="mt-2" rounded="shaped">
         <v-expansion-panel-title>
           <v-icon>mdi-food-variant</v-icon>
-          {{ meal }}
+          {{ mealTranslations[meal] }}
         </v-expansion-panel-title>
         <v-expansion-panel-text>
           <v-list
@@ -247,10 +263,8 @@ const loadMealsFromLocalStorage = () => {
       </v-card-actions>
     </v-card>
   </v-dialog>
+  </div>
 </template>
-
-background: linear-gradient(0deg, rgb(41, 178, 147) 6%, rgb(0, 201, 112) 57%);
-
 
 <style scoped lang="scss">
 .v-container {
@@ -299,6 +313,10 @@ h1 {
 
 .v-date-picker {
   max-height: 300px;
+}
+
+div {
+  height: 100%;
 }
 
 </style>
