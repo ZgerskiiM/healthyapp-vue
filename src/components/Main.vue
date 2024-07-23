@@ -23,6 +23,7 @@ const dailyNutrition = useCaloriesStore();
 onMounted(() => {
   checkFirstVisit();
   items.value = FoodStore.food;
+  FoodStore.loadFromLocalStorage();
   loadMealsFromLocalStorage();
 });
 
@@ -161,7 +162,7 @@ const loadMealsFromLocalStorage = () => {
 <template>
   <UserData v-if="isFirstVisit" @close="closeFirstVisitComponent"/>
   <div v-else class="main-window">
-  <v-container class="progress_card">
+  <v-container class="progress-card">
     <v-card-title>
       <h1>Счет калорий</h1>
     </v-card-title>
@@ -280,7 +281,7 @@ const loadMealsFromLocalStorage = () => {
   align-items: center;
 }
 
-.progress_card {
+.progress-card {
   width: 1000em;
   font-weight: 100;
   color: rgb(224, 224, 224);

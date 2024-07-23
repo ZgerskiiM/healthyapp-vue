@@ -25,7 +25,6 @@ ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
 const FoodStore = useFoodStore();
 const UserStore = useUserStore();
 const dailyNutrition = useCaloriesStore();
-
 const startDate = ref(new Date().toISOString().split("T")[0]);
 const endDate = ref(new Date().toISOString().split("T")[0]);
 const chartData = ref({
@@ -57,7 +56,6 @@ function updateChart() {
   const dates = [];
   const calories = [];
   const colors = [];
-
   const start = new Date(startDate.value);
   const end = new Date(endDate.value);
   let currentDate = new Date(start);
@@ -68,7 +66,6 @@ function updateChart() {
     const caloriesForDay = calculateCaloriesForDate(dateString);
     calories.push(caloriesForDay);
     colors.push(caloriesForDay >= dailyCalorieGoal.value ? "#ea5545" : "#87bc45");
-
     currentDate.setDate(currentDate.getDate() + 1);
   }
 

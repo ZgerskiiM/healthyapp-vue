@@ -10,6 +10,7 @@ const items = ref([]);
 
 onMounted(() => {
   items.value = FoodStore.food;
+  FoodStore.loadFromLocalStorage();
 });
 
 const model = ref();
