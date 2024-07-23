@@ -4,17 +4,16 @@ import { v4 as uuidv4 } from "uuid";
 import { useUserStore } from "/src/stores/UserStore.js";
 
 const emit = defineEmits(["close"]);
-
 const close = () => {
   emit("close");
 };
 
 const UserStore = useUserStore();
-const userweight = ref(0);
+const userweight = ref("");
 const username = ref("");
 const usergender = ref("");
-const userage = ref(0);
-const userheight = ref(0);
+const userage = ref("");
+const userheight = ref("");
 const useractivity = ref("");
 const showname = ref(false);
 const showgender = ref(false);
@@ -73,6 +72,12 @@ const calculateCalories = (user) => {
   const ncalories = Math.round(bmr * activityMultiplier[user.activity]);
   return ncalories;
 };
+
+const handleClick = () => {
+  addUser();
+  close();
+};
+
 </script>
 
 <template>
@@ -85,25 +90,26 @@ const calculateCalories = (user) => {
       <v-card-action>
         <v-btn
           class="mt-5"
+          text="Начать"
           @click="
             showname = true;
-            start = false;
-          "
-          >Начать</v-btn
-        >
+            start = false;"
+          ></v-btn>
       </v-card-action>
     </v-card-item>
     <v-card-item v-if="showname">
       <h2>Как вас зовут?</h2>
       <v-card-action>
-        <v-text-field v-model="username" type="text"></v-text-field>
+        <v-text-field
+        v-model="username"
+        type="text"
+        ></v-text-field>
         <v-btn
+          text="Продолжить"
           @click="
             showgender = true;
-            showname = false;
-          "
-          >Продолжить</v-btn
-        >
+            showname = false;"
+          ></v-btn>
       </v-card-action>
     </v-card-item>
     <v-card-item v-if="showgender">
@@ -114,12 +120,11 @@ const calculateCalories = (user) => {
           <v-radio label="Женский" value="Female"></v-radio>
         </v-radio-group>
         <v-btn
+          text="Продолжить"
           @click="
             showage = true;
-            showgender = false;
-          "
-          >Продолжить</v-btn
-        >
+            showgender = false;"
+          ></v-btn>
       </v-card-action>
     </v-card-item>
     <v-card-item v-if="showage">
@@ -127,12 +132,10 @@ const calculateCalories = (user) => {
       <v-text-field v-model="userage" type="number"></v-text-field>
       <v-card-action>
         <v-btn
+          text="Продолжить"
           @click="
             showweight = true;
-            showage = false;
-          "
-          >Продолжить</v-btn
-        >
+            showage = false;"></v-btn>
       </v-card-action>
     </v-card-item>
     <v-card-item v-if="showweight">
@@ -140,12 +143,11 @@ const calculateCalories = (user) => {
       <v-card-action>
         <v-text-field v-model="userweight" type="number"></v-text-field>
         <v-btn
+          text="Продолжить"
           @click="
             showheight = true;
-            showweight = false;
-          "
-          >Продолжить</v-btn
-        >
+            showweight = false;"
+          ></v-btn>
       </v-card-action>
     </v-card-item>
     <v-card-item v-if="showheight">
@@ -153,12 +155,11 @@ const calculateCalories = (user) => {
       <v-card-action>
         <v-text-field v-model="userheight" type="number"></v-text-field>
         <v-btn
+          text="Продолжить"
           @click="
             showactivity = true;
-            showheight = false;
-          "
-          >Продолжить</v-btn
-        >
+            showheight = false;"
+          ></v-btn>
       </v-card-action>
     </v-card-item>
     <v-card-item v-if="showactivity">
@@ -172,20 +173,20 @@ const calculateCalories = (user) => {
           <v-radio label="Экстремальный" value="ExtrAct"></v-radio>
         </v-radio-group>
       </v-card-action>
-      <v-btn @click="addUser">Закончить</v-btn>
-      <v-btn @click="close">Перейти к приложению</v-btn>
+      <v-btn
+        text="Закончить"
+        @click="handleClick"></v-btn>
     </v-card-item>
-    <v-card-item v-for="user in UserStore.user" :key="user.id"> {{ user.uname }}, ваша суточная норма калорий равна {{ calculateCalories(user) }} </v-card-item>
   </v-card>
 </template>
 
 <style scoped lang="scss">
 * {
-  color: rgb(14, 14, 14);
+  color: rgb(223, 223, 223);
 }
 
 .v-card {
-  background-color: rgb(41, 178, 93);
+  background-color: rgb(41, 178, 71);
   height: 58.9em;
   border-radius: 0;
 }
@@ -211,6 +212,7 @@ p {
 
 .v-btn {
   width: 10em;
+  color:black;
 }
 
 .v-card-item {

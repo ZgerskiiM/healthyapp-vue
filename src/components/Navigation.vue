@@ -9,7 +9,11 @@ const router = useRouter();
   class="overflow-visible"
   style="height: 56px;"
   >
-    <v-bottom-navigation v-model="value" color="primary" active>
+    <v-bottom-navigation
+      v-model="value"
+      color="primary"
+      active
+    >
       <v-btn @click="router.push({ name: 'Graph' })">
         <v-icon>mdi-thermostat-box</v-icon>
         Статистика
