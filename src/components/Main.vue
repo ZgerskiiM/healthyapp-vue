@@ -19,7 +19,7 @@ const FoodStore = useFoodStore();
 const items = ref([]);
 const UserStore = useUserStore();
 const dailyNutrition = useCaloriesStore();
-
+ 
 onMounted(() => {
   checkFirstVisit();
   items.value = FoodStore.food;

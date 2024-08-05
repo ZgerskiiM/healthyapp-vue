@@ -2,7 +2,7 @@
 import { ref, onMounted } from "vue";
 import Navigation from "./Navigation.vue";
 import { useFoodStore } from "/src/stores/ProductStore.js";
-
+ 
 const model = ref();
 const FoodStore = useFoodStore();
 const items = ref([]);

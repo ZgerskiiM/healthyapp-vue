@@ -6,7 +6,7 @@ import { useUserStore } from "/src/stores/UserStore.js";
 const emit = defineEmits(["close"]);
 const close = () => {
   emit("close");
-};
+}; 
 
 const UserStore = useUserStore();
 const userweight = ref("");

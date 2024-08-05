@@ -1,10 +1,9 @@
 import { defineStore } from 'pinia';
-
+ 
 export const useCaloriesStore = defineStore('calories', {
   state: () => ({
     dailyCalories: {}
   }),
-
   actions: {
     updateDailyCalories(date, calories) {
       this.dailyCalories[date] = calories;
@@ -16,7 +15,6 @@ export const useCaloriesStore = defineStore('calories', {
       }
     }
   },
-
   getters: {
     getDailyCalories: (state) => {
       return (meals, selectedDate, items) => {

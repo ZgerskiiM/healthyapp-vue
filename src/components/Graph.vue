@@ -21,7 +21,7 @@ import { useCaloriesStore } from "/src/stores/DailyNutritionStore.js";
 import Navigation from "./Navigation.vue";
 
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale);
-
+ 
 const FoodStore = useFoodStore();
 const UserStore = useUserStore();
 const dailyNutrition = useCaloriesStore();
@@ -104,9 +104,9 @@ watch([startDate, endDate], updateChart);
       <p>Вес {{ UserStore.getUser.weight }}</p>
     </v-list>
     <v-card
+      class="mx-auto text-center mt-5 pl-2 pr-2"
       min-width="300px"
       max-width="1050px"
-      class="mx-auto text-center mt-5 pl-2 pr-2"
       elevation="4"
     >
       <div class="date-picker-container">

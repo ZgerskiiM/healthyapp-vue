@@ -9,5 +9,5 @@ export const vuetify = createVuetify({
   components,
   directives,
   VDateInput,
-});
+}); 
 
