@@ -1,38 +1,39 @@
 <script setup>
-import {
-  ref,
-  reactive,
-  onMounted,
-  computed
-} from "vue";
+import { ref, reactive, onMounted, computed, watch } from "vue";
 import Navigation from "/src/components/Navigation.vue";
-import UserData from "/src/components/UserData.vue"
-import { useFoodStore } from '/src/stores/ProductStore.js'
-import { useUserStore } from '/src/stores/UserStore.js'
-import { useCaloriesStore } from '/src/stores/DailyNutritionStore.js';
+import UserData from "/src/components/UserData.vue";
+import MealExpansionPanels from "/src/components/ExpansionPanels.vue"
+import { useFoodStore } from "/src/stores/ProductStore.js";
+import { useUserStore } from "/src/stores/UserStore.js";
+import { useCaloriesStore } from "/src/stores/DailyNutritionStore.js";
 
 const showCalendar = ref(false);
-const selectedDate = ref(new Date());
+const meals = reactive({});
+const selectedDate = ref(new Date(new Date().setHours(0, 0, 0, 0)));
 const showAddProductDialog = ref(false);
 const currentMeal = ref("");
-const FoodStore = useFoodStore();
+const foodStore = useFoodStore();
 const items = ref([]);
-const UserStore = useUserStore();
+const userStore = useUserStore();
 const dailyNutrition = useCaloriesStore();
- 
+const currentDateString = computed(() => {
+  return selectedDate.value.toISOString().split('T')[0];
+});
+
 onMounted(() => {
   checkFirstVisit();
-  items.value = FoodStore.food;
-  FoodStore.loadFromLocalStorage();
+  items.value = foodStore.food;
+  foodStore.loadFromLocalStorage();
   loadMealsFromLocalStorage();
+  initializeMealsForDate(selectedDate.value);
 });
 
 const isFirstVisit = ref(false);
 
 const checkFirstVisit = () => {
-  if (!localStorage.getItem('hasVisited')) {
+  if (!localStorage.getItem("hasVisited")) {
     isFirstVisit.value = true;
-    localStorage.setItem('hasVisited', 'true');
+    localStorage.setItem("hasVisited", "true");
   }
 };
 
@@ -40,16 +41,10 @@ const closeFirstVisitComponent = () => {
   isFirstVisit.value = false;
 };
 
-const meals = reactive({
-  Breakfast: [],
-  Lunch: [],
-  Dinner: [],
-});
-
 const mealTranslations = {
-  'Breakfast': 'Завтрак',
-  'Lunch': 'Обед',
-  'Dinner': 'Ужин'
+  Breakfast: "Завтрак",
+  Lunch: "Обед",
+  Dinner: "Ужин",
 };
 
 const initializeMealsForDate = (date) => {
@@ -65,7 +60,7 @@ const initializeMealsForDate = (date) => {
 };
 
 const dailyCalorieGoal = computed(() => {
-  const user = UserStore.getUser;
+  const user = userStore.getUser;
   return user ? user.ucalories : 2500;
 });
 
@@ -84,6 +79,7 @@ const addProduct = (meal) => {
 const confirmAddProduct = () => {
   if (newProduct.name && newProduct.weight > 0) {
     const dateString = selectedDate.value.toISOString().split("T")[0];
+    initializeMealsForDate(selectedDate.value);
     meals[dateString][currentMeal.value].push({ ...newProduct });
     showAddProductDialog.value = false;
     newProduct.name = "";
@@ -95,52 +91,36 @@ const confirmAddProduct = () => {
 
 const totalCalories = computed(() => {
   return dailyNutrition.getDailyCalories(meals, selectedDate.value, items.value);
-})
+});
 
-const totalProteins = computed(() => {
-  const dateString = selectedDate.value.toISOString().split("T")[0];
-  if (!meals[dateString]) return 0;
-  return ['Breakfast', 'Lunch', 'Dinner'].reduce((total, meal) => {
-    return total + meals[dateString][meal].reduce((mealTotal, product) => {
-      const item = items.value.find(i => i.name === product.name);
+const totalNutrients = computed(() => {
+  if (!meals[currentDateString.value]) return { proteins: 0, carbs: 0, fats: 0 };
+  return ["Breakfast", "Lunch", "Dinner"].reduce((total, meal) => {
+    return (meals[currentDateString.value][meal] || []).reduce((mealTotal, product) => {
+      const item = items.value.find((i) => i.name === product.name);
       if (item) {
-        return mealTotal + parseInt((parseInt(item.proteins) / 100) * parseInt(product.weight));
+        const weight = parseInt(product.weight);
+        return {
+          proteins: mealTotal.proteins + parseInt((parseInt(item.proteins) / 100) * weight),
+          carbs: mealTotal.carbs + parseInt((parseInt(item.carbs) / 100) * weight),
+          fats: mealTotal.fats + parseInt((parseInt(item.fats) / 100) * weight)
+        };
       }
       return mealTotal;
-    }, 0);
-  }, 0);
+    }, total);
+  }, { proteins: 0, carbs: 0, fats: 0 });
 });
-const totalCarbs = computed(() => {
-  const dateString = selectedDate.value.toISOString().split("T")[0];
-  if (!meals[dateString]) return 0;
-  return ['Breakfast', 'Lunch', 'Dinner'].reduce((total, meal) => {
-    return total + meals[dateString][meal].reduce((mealTotal, product) => {
-      const item = items.value.find(i => i.name === product.name);
-      if (item) {
-        return mealTotal + parseInt((parseInt(item.carbs) / 100) * parseInt(product.weight));
-      }
-      return mealTotal;
-    }, 0);
-  }, 0);
-});
-const totalFats = computed(() => {
-  const dateString = selectedDate.value.toISOString().split("T")[0];
-  if (!meals[dateString]) return 0;
-  return ['Breakfast', 'Lunch', 'Dinner'].reduce((total, meal) => {
-    return total + meals[dateString][meal].reduce((mealTotal, product) => {
-      const item = items.value.find(i => i.name === product.name);
-      if (item) {
-        return mealTotal + parseInt((parseInt(item.fats) / 100) * parseInt(product.weight));
-      }
-      return mealTotal;
-    }, 0);
-  }, 0);
-});
+
+const totalProteins = computed(() => totalNutrients.value.proteins);
+const totalCarbs = computed(() => totalNutrients.value.carbs);
+const totalFats = computed(() => totalNutrients.value.fats);
 
 const removeProduct = (meal, index) => {
   const dateString = selectedDate.value.toISOString().split("T")[0];
-  meals[dateString][meal].splice(index, 1);
-  saveMealsToLocalStorage();
+  if (meals[dateString] && meals[dateString][meal]) {
+    meals[dateString][meal].splice(index, 1);
+    saveMealsToLocalStorage();
+  }
 };
 
 const formatDate = (date) => {
@@ -148,144 +128,118 @@ const formatDate = (date) => {
 };
 
 const saveMealsToLocalStorage = () => {
-  localStorage.setItem('meals', JSON.stringify(meals));
+  localStorage.setItem("meals", JSON.stringify(meals));
 };
 
 const loadMealsFromLocalStorage = () => {
-  const savedMeals = localStorage.getItem('meals');
+  const savedMeals = localStorage.getItem("meals");
   if (savedMeals) {
     Object.assign(meals, JSON.parse(savedMeals));
   }
 };
+
+watch(selectedDate, (newDate) => {
+  initializeMealsForDate(newDate);
+});
 </script>
 
 <template>
-  <UserData v-if="isFirstVisit" @close="closeFirstVisitComponent"/>
-  <div v-else class="main-window">
-  <v-container class="progress-card">
-    <v-card-title>
-      <h1>Счет калорий</h1>
-    </v-card-title>
-    <v-card-item>
-      <v-progress-circular
-        :size="200"
-        :width="15"
-        :model-value="(totalCalories / dailyCalorieGoal) * 100"
-        color="white"
-      >Осталось {{ Math.max(0, dailyCalorieGoal - totalCalories) }} кКал
-      </v-progress-circular>
-    </v-card-item>
-    <v-container class="d-flex flex-column ">
-      Каллорий {{ totalCalories }} кКал
-      Белков {{ totalProteins }} г
-      Жиров {{ totalFats }} г
-      Углеводов {{ totalCarbs }} г
-    </v-container>
-  </v-container>
-  <v-container>
-    <v-btn @click="showCalendar = !showCalendar">{{ formatDate(selectedDate) }}
-    </v-btn>
-  </v-container>
-  <v-row v-if="showCalendar" justify="space-around">
-    <v-date-picker
-      v-model="selectedDate"
-      show-adjacent-months
-      hide-header
-    ></v-date-picker>
-  </v-row>
-  <v-card-item class="d-flex justify-center">
-    <v-expansion-panels>
-      <v-expansion-panel
-        v-for="meal in ['Breakfast', 'Lunch', 'Dinner']" :key="meal"
-        class="mt-2"
-        rounded="shaped"
-      >
-        <v-expansion-panel-title>
-          <v-icon>mdi-food-variant</v-icon>
-          {{ mealTranslations[meal] }}
-        </v-expansion-panel-title>
-        <v-expansion-panel-text>
-          <v-list v-if="!meals[selectedDate.toISOString().split('T')[0]] || meals[selectedDate.toISOString().split('T')[0]][meal].length === 0">
-            <v-list-item>Пока ничего нет
-            </v-list-item>
-          </v-list>
-          <v-list v-else>
-            <v-list-item v-for="(product, index) in meals[selectedDate.toISOString().split('T')[0]][meal]" :key="index">
-              {{ product.name }} - {{ product.weight }} г
-              <div v-for="item in items">
-                <li v-if="item.name === product.name">
-                  <p class="product-name">
-                    {{ parseInt((parseInt(item.calories) / 100) * parseInt(product.weight)) }} кКал
-                  </p>
-                  <p class="product-name">
-                    Белков {{ parseInt((parseInt(item.proteins) / 100) * parseInt(product.weight))}} г
-                  </p>
-                  <p class="product-name">
-                    Жиров {{ parseInt((parseInt(item.fats) / 100) * parseInt(product.weight)) }} г
-                  </p>
-                  <p class="product-name">
-                    Углеводов {{ parseInt((parseInt(item.carbs) / 100) * parseInt(product.weight))}} г
-                  </p>
-                </li>
-              </div>
-              <div>
-                <v-btn
-                icon="mdi-delete"
-                @click="removeProduct(meal, index)"
-                ></v-btn>
-              </div>
-            </v-list-item>
-          </v-list>
-          <v-btn
-          text="Добавить"
-          @click="addProduct(meal)"
-          ></v-btn>
-        </v-expansion-panel-text>
-      </v-expansion-panel>
-    </v-expansion-panels>
-  </v-card-item>
-  <Navigation />
-  <v-dialog
-    v-model="showAddProductDialog"
-    max-width="520px"
+  <UserData
+    v-if="isFirstVisit"
+    @close="closeFirstVisitComponent"
+  />
+  <div
+    v-else
+    class="main-window"
   >
-    <v-card>
-      <v-card-title> {{ currentMeal }}
+    <v-container class="progress-card">
+      <v-card-title>
+        <h1>Счет калорий</h1>
       </v-card-title>
-      <v-card-text>
-        <v-container id="id">
-          <v-autocomplete
-            v-model="newProduct.name"
-            :items="items.map(item => item.name)"
-            :title="calories"
-            width="110%"
-            item-text="item.name"
-            item-value="item.name"
-            label="Какой продукт вы хотите найти?"
-            auto-select-first
-          ></v-autocomplete>
-        </v-container>
-        <v-text-field
-          v-model="newProduct.weight"
-          label="Вес (г)"
-          type="number"
-        ></v-text-field>
-      </v-card-text>
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn
-        color="blue darken-1"
-        text="Отмена"
-        @click="showAddProductDialog = false"
-        ></v-btn>
-        <v-btn
-        color="blue darken-1"
-        text="Добавить"
-        @click="confirmAddProduct"
-        ></v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
+      <v-card-item>
+        <v-progress-circular
+          :size="200"
+          :width="15"
+          :model-value="(totalCalories / dailyCalorieGoal) * 100"
+          color="white"
+        >
+        Осталось {{ Math.max(0, dailyCalorieGoal - totalCalories) }} кКал
+        </v-progress-circular>
+      </v-card-item>
+      <v-container class="d-flex flex-column">
+        Каллорий {{ totalCalories }} кКал
+        Белков {{ totalProteins }} г
+        Жиров {{ totalFats }} г
+        Углеводов {{ totalCarbs }} г
+      </v-container>
+    </v-container>
+    <v-container>
+      <v-btn @click="showCalendar = !showCalendar">
+        {{ formatDate(selectedDate) }}
+      </v-btn>
+    </v-container>
+    <v-row
+      v-if="showCalendar"
+      justify="space-around"
+    >
+      <v-date-picker
+        v-model="selectedDate"
+        show-adjacent-months
+        hide-header
+      />
+    </v-row>
+    <v-card-item class="d-flex justify-center">
+        <MealExpansionPanels
+          :meals="meals"
+          :current-date-string="currentDateString"
+          :items="items"
+          :meal-translations="mealTranslations"
+          @remove-product="removeProduct"
+          @add-product="addProduct"
+        />
+    </v-card-item>
+    <Navigation />
+    <v-dialog
+      v-model="showAddProductDialog"
+      max-width="520px"
+    >
+      <v-card>
+        <v-card-title>
+          {{ currentMeal }}
+        </v-card-title>
+        <v-card-text>
+          <v-container id="id">
+            <v-autocomplete
+              v-model="newProduct.name"
+              :items="items.map((item) => item.name)"
+              width="110%"
+              item-text="item.name"
+              item-value="item.name"
+              label="Какой продукт вы хотите найти?"
+              auto-select-first
+            />
+          </v-container>
+          <v-text-field
+            v-model="newProduct.weight"
+            label="Вес (г)"
+            type="number"
+          />
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+            color="blue darken-1"
+            text="Отмена"
+            @click="showAddProductDialog = false"
+          />
+          <v-btn
+            color="blue darken-1"
+            text="Добавить"
+            @click="confirmAddProduct"
+          />
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -329,7 +283,7 @@ h1 {
   background: none;
 }
 
-.v-expansion-panels{
+.v-expansion-panels {
   width: 50em;
 }
 

@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
- 
+
 export const useCaloriesStore = defineStore('calories', {
   state: () => ({
     dailyCalories: {}
@@ -18,10 +18,12 @@ export const useCaloriesStore = defineStore('calories', {
   getters: {
     getDailyCalories: (state) => {
       return (meals, selectedDate, items) => {
-        const dateString = selectedDate.toISOString().split("T")[0];
+        const dateString = typeof selectedDate === 'string'
+          ? selectedDate
+          : selectedDate.toISOString().split("T")[0];
         if (!meals[dateString]) return 0;
         return ['Breakfast', 'Lunch', 'Dinner'].reduce((total, meal) => {
-          return total + meals[dateString][meal].reduce((mealTotal, product) => {
+          return total + (meals[dateString][meal] || []).reduce((mealTotal, product) => {
             const item = items.find(i => i.name === product.name);
             if (item) {
               return mealTotal + parseInt((parseInt(item.calories) / 100) * parseInt(product.weight));

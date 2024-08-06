@@ -21,9 +21,9 @@ import { useCaloriesStore } from "/src/stores/DailyNutritionStore.js";
 import Navigation from "./Navigation.vue";
 
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale);
- 
-const FoodStore = useFoodStore();
-const UserStore = useUserStore();
+
+const foodStore = useFoodStore();
+const userStore = useUserStore();
 const dailyNutrition = useCaloriesStore();
 const startDate = ref(new Date().toISOString().split("T")[0]);
 const endDate = ref(new Date().toISOString().split("T")[0]);
@@ -38,7 +38,7 @@ const chartData = ref({
 });
 
 const dailyCalorieGoal = computed(() => {
-  const user = UserStore.getUser;
+  const user = userStore.getUser;
   return user ? user.ucalories : 2500;
 });
 
@@ -62,8 +62,11 @@ function updateChart() {
 
   while (currentDate <= end) {
     const dateString = currentDate.toISOString().split("T")[0];
+    const previousDate = new Date(currentDate);
+    previousDate.setDate(previousDate.getDate() - 1);
+    const previousDateString = previousDate.toISOString().split("T")[0];
     dates.push(dateString);
-    const caloriesForDay = calculateCaloriesForDate(dateString);
+    const caloriesForDay = calculateCaloriesForDate(previousDateString);
     calories.push(caloriesForDay);
     colors.push(caloriesForDay >= dailyCalorieGoal.value ? "#ea5545" : "#87bc45");
     currentDate.setDate(currentDate.getDate() + 1);
@@ -84,7 +87,8 @@ function updateChart() {
 function calculateCaloriesForDate(dateString) {
   const meals = JSON.parse(localStorage.getItem("meals")) || {};
   if (!meals[dateString]) return 0;
-  return dailyNutrition.getDailyCalories(meals, new Date(dateString), FoodStore.food);
+  console.log(meals)
+  return dailyNutrition.getDailyCalories(meals, new Date(dateString), foodStore.food);
 }
 
 onMounted(() => {
@@ -98,10 +102,10 @@ watch([startDate, endDate], updateChart);
   <v-container>
     <h1>Статистика</h1>
     <v-list>
-      <p>{{ UserStore.getUser.uname }}</p>
-      <p>Возраст {{ UserStore.getUser.age }}</p>
-      <p>Рост {{ UserStore.getUser.height }}</p>
-      <p>Вес {{ UserStore.getUser.weight }}</p>
+      <p>{{ userStore.getUser.uname }}</p>
+      <p>Возраст {{ userStore.getUser.age }}</p>
+      <p>Рост {{ userStore.getUser.height }}</p>
+      <p>Вес {{ userStore.getUser.weight }}</p>
     </v-list>
     <v-card
       class="mx-auto text-center mt-5 pl-2 pr-2"
@@ -115,13 +119,13 @@ watch([startDate, endDate], updateChart);
           label="Начальная дата"
           type="date"
           @change="updateChart"
-        ></v-text-field>
+        />
         <v-text-field
           v-model="endDate"
           label="Конечная дата"
           type="date"
           @change="updateChart"
-        ></v-text-field>
+        />
       </div>
       <div class="chart-container">
         <Bar :data="chartData" :options="chartOptions" />

@@ -2,9 +2,9 @@
 import { ref, onMounted } from "vue";
 import Navigation from "./Navigation.vue";
 import { useFoodStore } from "/src/stores/ProductStore.js";
- 
+
 const model = ref();
-const FoodStore = useFoodStore();
+const foodStore = useFoodStore();
 const items = ref([]);
 const foodname = ref("");
 const foodcalories = ref("");
@@ -13,8 +13,8 @@ const foodproteins = ref("");
 const foodfats = ref("");
 
 onMounted(() => {
-  items.value = FoodStore.food;
-  FoodStore.loadFromLocalStorage();
+  items.value = foodStore.food;
+  foodStore.loadFromLocalStorage();
 });
 
 const addFood = () => {
@@ -26,7 +26,7 @@ const addFood = () => {
       proteins: foodproteins.value + " г",
       carbs: foodcarbs.value + " г",
     };
-    FoodStore.addFood(newFood);
+    foodStore.addFood(newFood);
     foodname.value = "";
     foodcalories.value = "";
     foodfats.value = "";
@@ -46,12 +46,11 @@ const addFood = () => {
         <v-autocomplete
           v-model="model"
           :items="items.map((item) => item.name)"
-          :title="calories"
           item-text="item.name"
           item-value="item.name"
           label="Какой продукт вы хотите найти?"
           auto-select-first
-        ></v-autocomplete>
+        />
       </v-container>
       <v-list v-if="model">
         <v-list-item>
@@ -87,13 +86,20 @@ const addFood = () => {
     <v-card-action>
       <v-container>
         <v-row justify="space-around">
-          <v-col cols="12" md="6">
-            <v-dialog transition="dialog-bottom-transition" width="auto">
+          <v-col
+            cols="12"
+            md="6"
+          >
+            <v-dialog
+              transition="dialog-bottom-transition"
+              width="auto"
+            >
               <template v-slot:activator="{ props: activatorProps }">
                 <v-btn
-                  v-bind="activatorProps"
-                  text="Добавить свой продукт"
-                  block></v-btn>
+                    v-bind="activatorProps"
+                    text="Добавить свой продукт"
+                    block
+                  />
               </template>
               <template v-slot:default="{ isActive }">
                 <v-card id="add-card">
@@ -102,35 +108,37 @@ const addFood = () => {
                     <v-text-field
                       v-model="foodname"
                       label="Введите название"
-                    ></v-text-field>
+                    />
                     <v-text-field
                       v-model="foodcalories"
                       label="Количество каллорий на 100г"
                       type="Number"
-                    ></v-text-field>
+                    />
                     <v-text-field
                       v-model="foodproteins"
                       label="Количество белка"
                       type="Number"
-                    ></v-text-field>
+                    />
                     <v-text-field
                       v-model="foodfats"
                       label="Количество жиров"
                       type="Number"
-                    ></v-text-field>
+                    />
                     <v-text-field
                       v-model="foodcarbs"
                       label="Количество углеводов"
                       type="Number"
-                    ></v-text-field>
+                    />
                   </v-card-actions>
                   <v-card-actions>
                     <v-btn
-                      text="Закрыть"
-                      @click="isActive.value = false"></v-btn>
+                        text="Закрыть"
+                        @click="isActive.value = false"
+                      />
                     <v-btn
-                      text="Добавить"
-                      @click="addFood"></v-btn>
+                        text="Добавить"
+                        @click="addFood"
+                      />
                   </v-card-actions>
                 </v-card>
               </template>

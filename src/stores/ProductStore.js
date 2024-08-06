@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import jsonData from "/food_base.json";
- 
+
 export const useFoodStore = defineStore("food", {
   state: () => ({
     food: JSON.parse(localStorage.getItem("food")) || jsonData,
