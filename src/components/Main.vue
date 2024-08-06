@@ -12,6 +12,7 @@ const meals = reactive({});
 const selectedDate = ref(new Date(new Date().setHours(0, 0, 0, 0)));
 const showAddProductDialog = ref(false);
 const currentMeal = ref("");
+const selectedMeal = ref("");
 const foodStore = useFoodStore();
 const items = ref([]);
 const userStore = useUserStore();
@@ -71,6 +72,7 @@ const newProduct = reactive({
 });
 
 const addProduct = (meal) => {
+  selectedMeal.value = mealTranslations[meal];
   currentMeal.value = meal;
   showAddProductDialog.value = true;
   initializeMealsForDate(selectedDate.value);
@@ -205,7 +207,7 @@ watch(selectedDate, (newDate) => {
     >
       <v-card>
         <v-card-title>
-          {{ currentMeal }}
+          {{ selectedMeal }}
         </v-card-title>
         <v-card-text>
           <v-container id="id">

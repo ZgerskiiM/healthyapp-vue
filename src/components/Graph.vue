@@ -87,7 +87,6 @@ function updateChart() {
 function calculateCaloriesForDate(dateString) {
   const meals = JSON.parse(localStorage.getItem("meals")) || {};
   if (!meals[dateString]) return 0;
-  console.log(meals)
   return dailyNutrition.getDailyCalories(meals, new Date(dateString), foodStore.food);
 }
 
