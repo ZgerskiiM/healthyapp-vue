@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive, onMounted, computed, watch } from "vue";
+import { ref, reactive, onMounted, computed, watch, onBeforeUnmount } from "vue";
 import Navigation from "/src/components/Navigation.vue";
 import UserData from "/src/components/UserData.vue";
 import MealExpansionPanels from "/src/components/ExpansionPanels.vue"
@@ -7,7 +7,7 @@ import { useFoodStore } from "/src/stores/ProductStore.js";
 import { useUserStore } from "/src/stores/UserStore.js";
 import { useCaloriesStore } from "/src/stores/DailyNutritionStore.js";
 
-const showCalendar = ref(false);
+const showDatePicker = ref(false);
 const meals = reactive({});
 const selectedDate = ref(new Date(new Date().setHours(0, 0, 0, 0)));
 const showAddProductDialog = ref(false);
@@ -27,6 +27,12 @@ onMounted(() => {
   foodStore.loadFromLocalStorage();
   loadMealsFromLocalStorage();
   initializeMealsForDate(selectedDate.value);
+  loadDataFromLocalStorage();
+
+});
+
+onBeforeUnmount(() => {
+  saveDataToLocalStorage();
 });
 
 const isFirstVisit = ref(false);
@@ -140,8 +146,20 @@ const loadMealsFromLocalStorage = () => {
   }
 };
 
+function saveDataToLocalStorage() {
+  localStorage.setItem('selectedDate', selectedDate.value.toISOString());
+}
+
+function loadDataFromLocalStorage() {
+  const savedSelectedDate = localStorage.getItem('selectedDate');
+  if (savedSelectedDate) {
+    selectedDate.value = new Date(savedSelectedDate);
+  }
+}
+
 watch(selectedDate, (newDate) => {
   initializeMealsForDate(newDate);
+  saveDataToLocalStorage();
 });
 </script>
 
@@ -176,20 +194,19 @@ watch(selectedDate, (newDate) => {
       </v-container>
     </v-container>
     <v-container>
-      <v-btn @click="showCalendar = !showCalendar">
+      <v-btn @click="showDatePicker = true">
         {{ formatDate(selectedDate) }}
       </v-btn>
     </v-container>
-    <v-row
-      v-if="showCalendar"
-      justify="space-around"
-    >
+
+    <v-dialog v-model="showDatePicker" max-width="290px">
       <v-date-picker
         v-model="selectedDate"
+        @change="showDatePicker = false"
         show-adjacent-months
         hide-header
       />
-    </v-row>
+    </v-dialog>
     <v-card-item class="d-flex justify-center">
         <MealExpansionPanels
           :meals="meals"
@@ -255,7 +272,7 @@ watch(selectedDate, (newDate) => {
 .progress-card {
   width: 1000em;
   font-weight: 400;
-  color: rgb(224, 224, 224);
+  color: rgb(255, 255, 255);
 }
 
 .v-list-item {

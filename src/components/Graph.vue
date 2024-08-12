@@ -3,7 +3,8 @@ import {
   ref,
   onMounted,
   computed,
-  watch
+  watch,
+  onBeforeUnmount
 } from "vue";
 import { Bar } from "vue-chartjs";
 import {
@@ -91,10 +92,33 @@ function calculateCaloriesForDate(dateString) {
 }
 
 onMounted(() => {
+  loadDatesFromLocalStorage();
   updateChart();
 });
 
-watch([startDate, endDate], updateChart);
+onBeforeUnmount(() => {
+  saveDatesToLocalStorage();
+});
+
+function saveDatesToLocalStorage() {
+  localStorage.setItem('startDate', startDate.value);
+  localStorage.setItem('endDate', endDate.value);
+}
+
+function loadDatesFromLocalStorage() {
+  const savedStartDate = localStorage.getItem('startDate');
+  const savedEndDate = localStorage.getItem('endDate');
+
+  if (savedStartDate) {
+    startDate.value = savedStartDate;
+  }
+  if (savedEndDate) {
+    endDate.value = savedEndDate;
+  }
+}
+
+
+watch([startDate, endDate], updateChart, saveDatesToLocalStorage);
 </script>
 
 <template>
@@ -138,7 +162,7 @@ watch([startDate, endDate], updateChart);
 .v-card {
   display: flex;
   flex-direction: column;
-  background-color: rgb(228, 228, 228);
+  color: rgb(0, 0, 0);
 }
 
 .date-picker-container {
