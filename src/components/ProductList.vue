@@ -38,7 +38,7 @@ const addFood = () => {
 
 <template>
   <v-card>
-    <v-card-title>
+    <v-card-title class="pl-12">
       <h1>Справочник</h1>
     </v-card-title>
     <v-card-item>
@@ -83,7 +83,7 @@ const addFood = () => {
         </v-list-item>
       </v-list>
     </v-card-item>
-    <v-card-action>
+    <v-card-actions>
       <v-container>
         <v-row justify="space-around">
           <v-col
@@ -103,7 +103,9 @@ const addFood = () => {
               </template>
               <template v-slot:default="{ isActive }">
                 <v-card id="add-card">
-                  <h2>Введите название</h2>
+                  <v-card-title class="pl-12">
+                    <h2>Введите название</h2>
+                  </v-card-title>
                   <v-card-actions class="d-flex flex-column">
                     <v-text-field
                       v-model="foodname"
@@ -146,7 +148,7 @@ const addFood = () => {
           </v-col>
         </v-row>
       </v-container>
-    </v-card-action>
+    </v-card-actions>
     <Navigation />
   </v-card>
 </template>
@@ -184,10 +186,9 @@ h1 {
 }
 
 .v-card {
-  background-color: rgb(41, 178, 71);
-  height: 50em;
+  background-color: rgb(82, 193, 106);
+  height:100vh;
   border-radius: 0;
-  padding-left: 50px;
 }
 
 .v-list {
@@ -208,5 +209,6 @@ p {
 
 .v-btn {
   color: black;
+  background-color: white;
 }
 </style>

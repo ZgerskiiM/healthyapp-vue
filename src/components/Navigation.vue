@@ -13,19 +13,19 @@ const router = useRouter();
       color="primary"
       active
     >
-      <v-btn @click="router.push({ name: 'Graph' })">
+      <v-btn :to="({ name: 'Graph' })">
         <v-icon>
           mdi-thermostat-box
         </v-icon>
         Статистика
       </v-btn>
-      <v-btn @click="router.push({ name: 'Main' })">
+      <v-btn :to="({ name: 'Main' })">
         <v-icon>
           mdi-home-heart
         </v-icon>
         Главная
       </v-btn>
-      <v-btn @click="router.push({ name: 'List' })">
+      <v-btn :to="({ name: 'List' })">
         <v-icon>
           mdi-book-heart
         </v-icon>

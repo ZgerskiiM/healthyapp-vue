@@ -106,7 +106,7 @@ const handleClick = () => {
     </v-card-title>
     <v-card-item v-if="start">
       <h2>Привет! Для начала добавьте свои данные</h2>
-      <v-card-action>
+      <v-card-actions>
         <v-btn
           class="mt-5"
           text="Начать"
@@ -115,11 +115,11 @@ const handleClick = () => {
             start = false;
           "
         />
-      </v-card-action>
+      </v-card-actions>
     </v-card-item>
     <v-card-item v-if="showname">
       <h2>Как вас зовут?</h2>
-      <v-card-action>
+      <v-card-actions>
         <v-text-field
           v-model="username"
           type="text"
@@ -127,17 +127,14 @@ const handleClick = () => {
         />
         <v-btn
           text="Продолжить"
-          @click="
-            showgender = true;
-            showname = false;
-          "
-            :disabled="!isNameValid"
+          @click=" showgender = true; showname = false;"
+          :disabled="!isNameValid"
         />
-      </v-card-action>
+      </v-card-actions>
     </v-card-item>
     <v-card-item v-if="showgender">
       <h2>Выберите пол</h2>
-      <v-card-action>
+      <v-card-actions>
         <v-radio-group v-model="usergender">
           <v-radio
             label="Мужской"
@@ -154,9 +151,9 @@ const handleClick = () => {
             showage = true;
             showgender = false;
           "
-            :disabled="!isGenderValid"
+          :disabled="!isGenderValid"
         />
-      </v-card-action>
+      </v-card-actions>
     </v-card-item>
     <v-card-item v-if="showage">
       <h2>Сколько вам лет?</h2>
@@ -165,20 +162,20 @@ const handleClick = () => {
         type="number"
         :rules="[rules.required, rules.positive]"
       />
-      <v-card-action>
+      <v-card-actions>
         <v-btn
           text="Продолжить"
           @click="
             showweight = true;
             showage = false;
           "
-            :disabled="!isAgeValid"
+          :disabled="!isAgeValid"
         />
-      </v-card-action>
+      </v-card-actions>
     </v-card-item>
     <v-card-item v-if="showweight">
       <h2>Укажите ваш вес</h2>
-      <v-card-action>
+      <v-card-actions>
         <v-text-field
           v-model="userweight"
           type="number"
@@ -190,13 +187,13 @@ const handleClick = () => {
             showheight = true;
             showweight = false;
           "
-            :disabled="!isWeightValid"
+          :disabled="!isWeightValid"
         />
-      </v-card-action>
+      </v-card-actions>
     </v-card-item>
     <v-card-item v-if="showheight">
       <h2>Укажите ваш рост</h2>
-      <v-card-action>
+      <v-card-actions>
         <v-text-field
           v-model="userheight"
           type="number"
@@ -208,13 +205,13 @@ const handleClick = () => {
             showactivity = true;
             showheight = false;
           "
-            :disabled="!isHeightValid"
+          :disabled="!isHeightValid"
         />
-      </v-card-action>
+      </v-card-actions>
     </v-card-item>
     <v-card-item v-if="showactivity">
       <h2>Укажите ваш уровень активности</h2>
-      <v-card-action>
+      <v-card-actions>
         <v-radio-group v-model="useractivity">
           <v-radio
             label="Минимальная активность"
@@ -237,7 +234,7 @@ const handleClick = () => {
             value="ExtrAct"
           />
         </v-radio-group>
-      </v-card-action>
+      </v-card-actions>
       <v-btn
         text="Закончить"
         @click="handleClick"
@@ -253,7 +250,7 @@ const handleClick = () => {
 }
 
 .v-card {
-  background-color: rgb(41, 178, 71);
+  background-color: rgb(82, 193, 106);
   height: 58.9em;
   border-radius: 0;
 }
