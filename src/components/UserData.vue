@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from "vue";
+import { computed, reactive } from "vue";
 import { v4 as uuidv4 } from "uuid";
 import { useUserStore } from "/src/stores/UserStore.js";
 
@@ -10,7 +10,7 @@ const close = () => {
 
 const userStore = useUserStore();
 
-const formData = ref({
+const formData = reactive({
   weight: "",
   name: "",
   gender: "",
@@ -126,7 +126,7 @@ const handleClick = () => {
         <v-text-field
           v-model="formData.name"
           type="text"
-          :rules="[rules.required]"
+          :rules="[rules.required, rules.empty]"
         />
         <v-btn
           text="Продолжить"
@@ -268,10 +268,21 @@ p {
 .v-btn {
   width: 10em;
   color: black;
+  background-color: white;
 }
 
 .v-card-item {
   display: flex;
   justify-content: center;
+  flex-direction: column;
+}
+
+.v-card-actions {
+  display:flex;
+  flex-direction: column;
+}
+
+.v-text-field {
+  width: 10em;
 }
 </style>
