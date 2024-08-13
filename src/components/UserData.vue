@@ -1,5 +1,5 @@
 <script setup>
-import { ref,computed } from "vue";
+import { ref, computed } from "vue";
 import { v4 as uuidv4 } from "uuid";
 import { useUserStore } from "/src/stores/UserStore.js";
 
@@ -9,25 +9,22 @@ const close = () => {
 };
 
 const userStore = useUserStore();
-const userweight = ref("");
-const username = ref("");
-const usergender = ref("");
-const userage = ref("");
-const userheight = ref("");
-const useractivity = ref("");
-const showname = ref(false);
-const showgender = ref(false);
-const showage = ref(false);
-const showweight = ref(false);
-const showheight = ref(false);
-const showactivity = ref(false);
-const start = ref(true);
-const isNameValid = computed(() => validateField(username.value, [rules.required, rules.empty]));
-const isAgeValid = computed(() => validateField(userage.value, [rules.required, rules.number, rules.positive]));
-const isWeightValid = computed(() => validateField(userweight.value, [rules.required, rules.number, rules.positive]));
-const isHeightValid = computed(() => validateField(userheight.value, [rules.required, rules.number, rules.positive]));
-const isGenderValid = computed(() => !!usergender.value);
-const isActivityValid = computed(() => !!useractivity.value);
+
+const formData = ref({
+  weight: "",
+  name: "",
+  gender: "",
+  age: "",
+  height: "",
+  activity: "",
+  showName: false,
+  showGender: false,
+  showAge: false,
+  showWeight: false,
+  showHeight: false,
+  showActivity: false,
+  start: true
+});
 
 const rules = {
   required: (value) => !!value || "Обязательное поле",
@@ -40,21 +37,28 @@ const validateField = (value, fieldRules) => {
   return fieldRules.every(rule => rule(value) === true);
 };
 
+const isNameValid = computed(() => validateField(formData.name, [rules.required, rules.empty]));
+const isAgeValid = computed(() => validateField(formData.age, [rules.required, rules.number, rules.positive]));
+const isWeightValid = computed(() => validateField(formData.weight, [rules.required, rules.number, rules.positive]));
+const isHeightValid = computed(() => validateField(formData.height, [rules.required, rules.number, rules.positive]));
+const isGenderValid = computed(() => !!formData.gender);
+const isActivityValid = computed(() => !!formData.activity);
+
 const addUser = () => {
   const newUser = {
     id: uuidv4(),
-    uname: username.value,
-    gender: usergender.value,
-    weight: parseFloat(userweight.value),
-    height: parseInt(userheight.value),
-    age: parseInt(userage.value),
-    activity: useractivity.value,
+    uname: formData.name,
+    gender: formData.gender,
+    weight: parseFloat(formData.weight),
+    height: parseInt(formData.height),
+    age: parseInt(formData.age),
+    activity: formData.activity,
     ucalories: calculateCalories({
-      gender: usergender.value,
-      weight: parseFloat(userweight.value),
-      height: parseInt(userheight.value),
-      age: parseInt(userage.value),
-      activity: useractivity.value,
+      gender: formData.gender,
+      weight: parseFloat(formData.weight),
+      height: parseInt(formData.height),
+      age: parseInt(formData.age),
+      activity: formData.activity,
     }),
   };
   userStore.setUser(newUser);
@@ -62,12 +66,14 @@ const addUser = () => {
 };
 
 const resetForm = () => {
-  userweight.value = 0;
-  username.value = "";
-  userage.value = 0;
-  userheight.value = 0;
-  useractivity.value = "";
-  usergender.value = "";
+  Object.assign(formData, {
+    weight: 0,
+    name: "",
+    age: 0,
+    height: 0,
+    activity: "",
+    gender: "",
+  });
 };
 
 const calculateCalories = (user) => {
@@ -104,38 +110,35 @@ const handleClick = () => {
     <v-card-title>
       <h1>ucalories</h1>
     </v-card-title>
-    <v-card-item v-if="start">
+    <v-card-item v-if="formData.start">
       <h2>Привет! Для начала добавьте свои данные</h2>
       <v-card-actions>
         <v-btn
           class="mt-5"
           text="Начать"
-          @click="
-            showname = true;
-            start = false;
-          "
+          @click="formData.showName = true; formData.start = false;"
         />
       </v-card-actions>
     </v-card-item>
-    <v-card-item v-if="showname">
+    <v-card-item v-if="formData.showName">
       <h2>Как вас зовут?</h2>
       <v-card-actions>
         <v-text-field
-          v-model="username"
+          v-model="formData.name"
           type="text"
-          :rules=[rules.required]
+          :rules="[rules.required]"
         />
         <v-btn
           text="Продолжить"
-          @click=" showgender = true; showname = false;"
+          @click="formData.showGender = true; formData.showName = false;"
           :disabled="!isNameValid"
         />
       </v-card-actions>
     </v-card-item>
-    <v-card-item v-if="showgender">
+    <v-card-item v-if="formData.showGender">
       <h2>Выберите пол</h2>
       <v-card-actions>
-        <v-radio-group v-model="usergender">
+        <v-radio-group v-model="formData.gender">
           <v-radio
             label="Мужской"
             value="Male"
@@ -147,72 +150,60 @@ const handleClick = () => {
         </v-radio-group>
         <v-btn
           text="Продолжить"
-          @click="
-            showage = true;
-            showgender = false;
-          "
+          @click="formData.showAge = true; formData.showGender = false;"
           :disabled="!isGenderValid"
         />
       </v-card-actions>
     </v-card-item>
-    <v-card-item v-if="showage">
+    <v-card-item v-if="formData.showAge">
       <h2>Сколько вам лет?</h2>
       <v-text-field
-        v-model="userage"
+        v-model="formData.age"
         type="number"
         :rules="[rules.required, rules.positive]"
       />
       <v-card-actions>
         <v-btn
           text="Продолжить"
-          @click="
-            showweight = true;
-            showage = false;
-          "
+          @click="formData.showWeight = true; formData.showAge = false;"
           :disabled="!isAgeValid"
         />
       </v-card-actions>
     </v-card-item>
-    <v-card-item v-if="showweight">
+    <v-card-item v-if="formData.showWeight">
       <h2>Укажите ваш вес</h2>
       <v-card-actions>
         <v-text-field
-          v-model="userweight"
+          v-model="formData.weight"
           type="number"
           :rules="[rules.required, rules.positive]"
         />
         <v-btn
           text="Продолжить"
-          @click="
-            showheight = true;
-            showweight = false;
-          "
+          @click="formData.showHeight = true; formData.showWeight = false;"
           :disabled="!isWeightValid"
         />
       </v-card-actions>
     </v-card-item>
-    <v-card-item v-if="showheight">
+    <v-card-item v-if="formData.showHeight">
       <h2>Укажите ваш рост</h2>
       <v-card-actions>
         <v-text-field
-          v-model="userheight"
+          v-model="formData.height"
           type="number"
           :rules="[rules.required, rules.positive]"
         />
         <v-btn
           text="Продолжить"
-          @click="
-            showactivity = true;
-            showheight = false;
-          "
+          @click="formData.showActivity = true; formData.showHeight = false;"
           :disabled="!isHeightValid"
         />
       </v-card-actions>
     </v-card-item>
-    <v-card-item v-if="showactivity">
+    <v-card-item v-if="formData.showActivity">
       <h2>Укажите ваш уровень активности</h2>
       <v-card-actions>
-        <v-radio-group v-model="useractivity">
+        <v-radio-group v-model="formData.activity">
           <v-radio
             label="Минимальная активность"
             value="MinAct"

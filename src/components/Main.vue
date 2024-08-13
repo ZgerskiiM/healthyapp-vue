@@ -2,7 +2,8 @@
 import { ref, reactive, onMounted, computed, watch, onBeforeUnmount } from "vue";
 import Navigation from "/src/components/Navigation.vue";
 import UserData from "/src/components/UserData.vue";
-import MealExpansionPanels from "/src/components/ExpansionPanels.vue"
+import MealExpansionPanels from "./ExpansionPanels.vue"
+import AddProductDialog from './AddProductDialog.vue';
 import { useFoodStore } from "/src/stores/ProductStore.js";
 import { useUserStore } from "/src/stores/UserStore.js";
 import { useCaloriesStore } from "/src/stores/DailyNutritionStore.js";
@@ -218,47 +219,13 @@ watch(selectedDate, (newDate) => {
         />
     </v-card-item>
     <Navigation />
-    <v-dialog
-      v-model="showAddProductDialog"
-      max-width="520px"
-    >
-      <v-card>
-        <v-card-title>
-          {{ selectedMeal }}
-        </v-card-title>
-        <v-card-text>
-          <v-container id="id">
-            <v-autocomplete
-              v-model="newProduct.name"
-              :items="items.map((item) => item.name)"
-              width="110%"
-              item-text="item.name"
-              item-value="item.name"
-              label="Какой продукт вы хотите найти?"
-              auto-select-first
-            />
-          </v-container>
-          <v-text-field
-            v-model="newProduct.weight"
-            label="Вес (г)"
-            type="number"
-          />
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn
-            color="blue darken-1"
-            text="Отмена"
-            @click="showAddProductDialog = false"
-          />
-          <v-btn
-            color="blue darken-1"
-            text="Добавить"
-            @click="confirmAddProduct"
-          />
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+    <AddProductDialog
+    v-model:show="showAddProductDialog"
+    :selected-meal="selectedMeal"
+    :items="items"
+    :new-product="newProduct"
+    @confirm="confirmAddProduct"
+    />
   </div>
 </template>
 
