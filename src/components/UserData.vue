@@ -157,12 +157,12 @@ const handleClick = () => {
     </v-card-item>
     <v-card-item v-if="formData.showAge">
       <h2>Сколько вам лет?</h2>
+      <v-card-actions>
       <v-text-field
         v-model="formData.age"
         type="number"
         :rules="[rules.required, rules.positive]"
       />
-      <v-card-actions>
         <v-btn
           text="Продолжить"
           @click="formData.showWeight = true; formData.showAge = false;"
@@ -225,12 +225,12 @@ const handleClick = () => {
             value="ExtrAct"
           />
         </v-radio-group>
+        <v-btn
+          text="Закончить"
+          @click="handleClick"
+          :disabled="!isActivityValid"
+        />
       </v-card-actions>
-      <v-btn
-        text="Закончить"
-        @click="handleClick"
-        :disabled="!isActivityValid"
-      />
     </v-card-item>
   </v-card>
 </template>
@@ -273,13 +273,14 @@ p {
 
 .v-card-item {
   display: flex;
-  justify-content: center;
   flex-direction: column;
+  justify-content: center;
 }
 
 .v-card-actions {
   display:flex;
   flex-direction: column;
+  justify-content: center;
 }
 
 .v-text-field {

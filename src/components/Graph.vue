@@ -187,4 +187,14 @@ watch([startDate, endDate], updateChart, saveDatesToLocalStorage);
 .v-btn {
   font-size: 12px;
 }
+
+h1 {
+  color: white;
+  font-weight: 200;
+  font-size: 40px;
+}
+
+.v-list {
+  color: white;
+}
 </style>
